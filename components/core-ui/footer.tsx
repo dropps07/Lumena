@@ -1,0 +1,48 @@
+"use client";
+
+import AnimatedGradient from "@/components/ui/animatedGradient";
+import Link from "next/link";
+import { motion, useScroll, useTransform } from "motion/react";
+
+export default function Footer() {
+  const { scrollYProgress } = useScroll();
+
+  return (
+    <footer className="w-full p-4 md:p-8 items-center justify-center overflow-hidden z-30 max-w-7xl mx-auto">
+      <motion.div
+        className="bg-[#3B82F6] rounded-t-[36px] w-full h-80 flex justify-center items-center overflow-hidden"
+        style={{
+          scale: useTransform(scrollYProgress, [0.2, 0.4], [1, 1]),
+        }}
+        initial={{ opacity: 0, y: 100 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 1,
+          ease: "easeInOut",
+          type: "spring",
+          damping: 20,
+          stiffness: 100,
+          mass: 0.5,
+        }}
+        viewport={{ amount: 0.5 }}
+      >
+        <AnimatedGradient
+          colors={["#3B82F6", "#A78BFA", "#3B82F6", "#60A5FA", "#0F2F65"]}
+          speed={0.1}
+          blur="heavy"
+        />
+        <div className="relative overflow-hidden w-full h-full flex justify-end px-12 text-right items-start py-12 text-white">
+          <div className="flex flex-row space-x-12 sm:pace-x-16  md:space-x-24 text-sm sm:text-lg md:text-xl">
+          </div>
+          <Link
+            href="https://npxajey.vercel.app"
+            target="_blank"
+            className="absolute bottom-0 left-0 translate-y-1/3 sm:text-[192px] text-[128px] text-white font-extrabold tracking-tighter"
+          >
+            AJEY.
+          </Link>
+        </div>
+      </motion.div>
+    </footer>
+  );
+}
