@@ -2,27 +2,17 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Sun, Moon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { } from "lucide-react";
+
 
 
 export default function LandingPage() {
   const router = useRouter();
-  const [isDarkMode, setIsDarkMode] = useState(true);
 
-  useEffect(() => {
-    // Check for saved theme preference or default to dark mode
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setIsDarkMode(savedTheme === 'dark');
-    }
-  }, []);
 
-  const toggleTheme = () => {
-    const newTheme = !isDarkMode;
-    setIsDarkMode(newTheme);
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-  };
+
+
+
 
   const handleLaunch = () => {
     router.push("/editor");
@@ -88,20 +78,17 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="w-full max-w-4xl"
-        >
-          <div className="bg-gradient-to-br from-orange-400 via-purple-500 to-blue-500 p-1 rounded-3xl">
-            <div className="bg-gray-900 rounded-3xl p-6 min-h-[400px] flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
+          >
+              <video 
+              className="rounded-3xl"
+              playsInline
+              src="https://res.cloudinary.com/dhzomnepn/video/upload/v1754500999/preview-video.mp4"
+              autoPlay={true}
+              loop={true}
+              muted={true}
+              >
                 <p className="text-gray-400">Video preview will be displayed here</p>
-              </div>
-            </div>
-          </div>
+              </video>
         </motion.div>
 
         {/* Footer */}

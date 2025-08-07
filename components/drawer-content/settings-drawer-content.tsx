@@ -16,7 +16,7 @@ export default function SettingsDrawerContent({
     <div className="flex flex-col h-full bg-secondary overflow-y-auto no-scrollbar rounded-2xl relative">
       <div className="flex items-center justify-between p-2 border-b border-primary/10 bg-secondary w-full sticky top-0 z-10">
         <Link
-          href="https://github.com/keshav-exe/wallpaper-app"
+          href="https://github.com/dropps07/Lumena"
           target="_blank"
         >
           <Button variant="accent">
@@ -73,13 +73,13 @@ export default function SettingsDrawerContent({
           </div>
         </div>
         <Link
-          href="https://x.com/intent/tweet?text=Check%20out%20Gradii%20-%20A%20beautiful%20open-source%20gradient%20generator%20tool%0A%0Ahttps%3A%2F%2Fgithub.com%2Fkeshav-exe%2Fwallpaper-app"
+          href="https://x.com/intent/tweet?text=Check%20out%20Lumena%20-%20A%20beautiful%20open-source%20gradient%20generator%20tool%0A%0Ahttps%3A%2F%2Fgithub.com%dropps07%Lumena"
           target="_blank"
           className="flex flex-col gap-2 justify-between border border-primary/10 rounded-2xl p-4 bg-foreground/5 min-h-40"
         >
           <TwitterIcon className="size-6" />
           <h5 className="font-medium tracking-tight">
-            Enjoying <span className="font-bold">Gradii</span>? Share your
+            Enjoying <span className="font-bold">Lumena</span>? Share your
             experience on X/Twitter
           </h5>
         </Link>

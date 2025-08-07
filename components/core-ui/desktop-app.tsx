@@ -292,7 +292,7 @@ export default function DesktopApp({
             <ChevronRight className="size-4" />
           </button>
           <Link
-            href="https://x.com/intent/tweet?text=Check%20out%20Gradii%20-%20A%20beautiful%20open-source%20gradient%20generator%20tool%0A%0Ahttps%3A%2F%2Fgithub.com%2Fkeshav-exe%2Fwallpaper-app"
+            href="https://x.com/intent/tweet?text=Check%20out%20Gradii%20-%20A%20beautiful%20open-source%20gradient%20generator%20tool%0A%0Ahttps%3A%2F%2Fgithub.com%2Fdropps07%2Fwallpaper-app"
             target="_blank"
           >
             <Button variant="ghost" size="icon">

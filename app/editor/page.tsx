@@ -33,7 +33,7 @@ export default function Editor() {
       );
       store.setFontWeight(closestWeight);
     }
-  }, [store.fontFamily]);
+  }, [store]);
 
   useEffect(() => {
     if (shouldShowPWAPrompt) {
@@ -44,7 +44,7 @@ export default function Editor() {
         onDismiss: dismissPWAPrompt,
       });
     }
-  }, [shouldShowPWAPrompt]);
+  }, [shouldShowPWAPrompt, dismissPWAPrompt]);
 
   const downloadImage = async () => {
     try {
@@ -622,7 +622,7 @@ export default function Editor() {
                         fontWeight: '400'
                       }}
                     >
-                      Begin by placing and selecting your color points on the canvas. Drag them around to shape the gradient's flow and color interactions in real-time. Use the powerful controls to refine your artwork: change the blend mode, increase the blur for a softer look, or add a subtle noise effect for texture. When your masterpiece is complete, simply copy the generated <kbd>CSS</kbd> code to use in your project.
+                      Begin by placing and selecting your color points on the canvas. Drag them around to shape the gradient&apos;s flow and color interactions in real-time. Use the powerful controls to refine your artwork: change the blend mode, increase the blur for a softer look, or add a subtle noise effect for texture. When your masterpiece is complete, simply copy the generated <kbd>CSS</kbd> code to use in your project.
                     </p>
                   </div>
                 </div>

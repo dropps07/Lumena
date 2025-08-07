@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Switch } from "./switch";
 
@@ -68,12 +68,12 @@ export function PositionControl({
   };
 
   // Handle mouse/touch events
-  const handlePointerMove = (e: PointerEvent) => {
+  const handlePointerMove = useCallback((e: PointerEvent) => {
     if (!isDragging) return;
     e.preventDefault();
     const pos = absoluteToRelative(e.clientX, e.clientY);
     onChange(pos);
-  };
+  }, [isDragging, onChange, absoluteToRelative]);
 
   const handlePointerUp = () => {
     setIsDragging(false);
@@ -88,7 +88,7 @@ export function PositionControl({
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [isDragging, snapToGrid]);
+  }, [isDragging, snapToGrid, handlePointerMove]);
 
   // Convert relative position back to pixel coordinates for the handle
   const handlePosition = {

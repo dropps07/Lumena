@@ -74,8 +74,8 @@ export const metadata = {
     "design resources",
     "design assets",
   ],
-  authors: [{ name: "Keshav Bagaade", url: "https://keshavbagaade.com" }],
-  creator: "Keshav Bagaade",
+  authors: [{ name: "Ajey", url: "https://npxajey.vercel.app" }],
+  creator: "Ajey Awasthi",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -131,7 +131,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta
           name="viewport"

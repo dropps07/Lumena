@@ -18,7 +18,6 @@ import {
   Outfit,
   Albert_Sans,
 } from "next/font/google";
-import localFont from "next/font/local";
 
 // Sans-serif fonts
 export const bricolage = Bricolage_Grotesque({

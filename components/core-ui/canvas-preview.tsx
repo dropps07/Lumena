@@ -153,16 +153,7 @@ export function CanvasPreview() {
     effectiveValues.backgroundImage,
     effectiveValues.resolution.width,
     effectiveValues.resolution.height,
-  ]);
-
-  // Handle filters
-  useEffect(() => {
-    debouncedCompositeCanvas(compositeCanvas);
-  }, [
-    effectiveValues.blur,
-    effectiveValues.brightness,
-    effectiveValues.contrast,
-    effectiveValues.saturation,
+    debouncedCompositeCanvas,
   ]);
 
   const compositeCanvas = useCallback(() => {
@@ -216,6 +207,18 @@ export function CanvasPreview() {
     effectiveValues.resolution.height,
     effectiveValues.backgroundColor,
     effectiveValues.grainIntensity,
+  ]);
+
+  // Handle filters
+  useEffect(() => {
+    debouncedCompositeCanvas(compositeCanvas);
+  }, [
+    effectiveValues.blur,
+    effectiveValues.brightness,
+    effectiveValues.contrast,
+    effectiveValues.saturation,
+    debouncedCompositeCanvas,
+    compositeCanvas,
   ]);
 
   return (
