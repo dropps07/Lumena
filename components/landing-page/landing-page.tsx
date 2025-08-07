@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { } from "lucide-react";
-import Terms from "../landing-page/terms";
 
 export default function LandingPage() {
   const router = useRouter();
