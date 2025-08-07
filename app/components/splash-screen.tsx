@@ -19,7 +19,7 @@ export function SplashScreen() {
           duration: 0.5,
           type: "spring",
           bounce: 0,
-          ease: "cubic-bezier[0.08,0.82,0.17,1]",
+          ease: [0.08,0.82,0.17,1],
         }}
       >
         <Image src={logo} alt="Gradii" className="size-24" priority />

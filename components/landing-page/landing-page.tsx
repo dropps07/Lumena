@@ -3,17 +3,11 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { } from "lucide-react";
-
-
+import Terms from "../landing-page/terms";
 
 export default function LandingPage() {
   const router = useRouter();
-
-
-
-
-
-
+  
   const handleLaunch = () => {
     router.push("/editor");
   };
@@ -99,8 +93,9 @@ export default function LandingPage() {
           className="text-sm text-gray-400 flex items-center gap-2"
         >
           <p>© 2025 Lumena. All rights reserved.</p>
-          <a className="underline hover:text-white transition-colors" href="/terms">
-            Terms & Conditions
+          <a className="underline hover:text-white transition-colors"
+          href="/terms">
+            Terms and Conditions.
           </a>
         </motion.footer>
       </main>
