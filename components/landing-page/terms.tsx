@@ -30,7 +30,7 @@ export default function Terms() {
             <ul className="text-white text-left text-lg font-chillax space-y-4 mt-6">
               <li>
                 <span className="font-bold">1. Subscription Terms</span><br />
-                It&apso;s a free to use software :D
+                It&apos;s a free to use software :D
               </li>
               <li>
                 <span className="font-bold">2. Payment Terms</span><br />
