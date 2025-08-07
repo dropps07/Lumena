@@ -30,7 +30,7 @@ export default function Terms() {
             <ul className="text-white text-left text-lg font-chillax space-y-4 mt-6">
               <li>
                 <span className="font-bold">1. Subscription Terms</span><br />
-                It's a free to use software :D
+                It&apso;s a free to use software :D
               </li>
               <li>
                 <span className="font-bold">2. Payment Terms</span><br />
@@ -46,7 +46,7 @@ export default function Terms() {
               </li>
               <li>
                 <span className="font-bold">5. Limitation of Liability</span><br />
-                Our service is provided "as is" without warranties. We are not liable for any damages arising from service use.
+                Our service is provided &quot;as is&quot; without warranties. We are not liable for any damages arising from service use.
               </li>
             </ul>
             <p className="text-white text-sm font-chillax mt-8">
