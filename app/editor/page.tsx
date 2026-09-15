@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { FONTS } from "@/lib/constants";
 import { useWallpaperStore } from "@/store/wallpaper";
 import { useSafariCheck } from "@/hooks/use-safari-check";
+import { hslToHex } from "@/lib/utils/color"
 
 export default function Editor() {
   const [isMobile, setIsMobile] = useState(false);
@@ -508,31 +509,31 @@ export default function Editor() {
       return colors.map(({ h, s, l }) => hslToHex(h, s, l));
     };
 
-    // Helper function to convert HSL to Hex
-    const hslToHex = (h: number, s: number, l: number) => {
-      const hue = h / 360;
-      const sat = s / 100;
-      const light = l / 100;
+    // // Helper function to convert HSL to Hex
+    // const hslToHex = (h: number, s: number, l: number) => {
+    //   const hue = h / 360;
+    //   const sat = s / 100;
+    //   const light = l / 100;
 
-      const c = (1 - Math.abs(2 * light - 1)) * sat;
-      const x = c * (1 - Math.abs(((hue * 6) % 2) - 1));
-      const m = light - c / 2;
+    //   const c = (1 - Math.abs(2 * light - 1)) * sat;
+    //   const x = c * (1 - Math.abs(((hue * 6) % 2) - 1));
+    //   const m = light - c / 2;
 
-      let r, g, b;
-      if (hue < 1 / 6) [r, g, b] = [c, x, 0];
-      else if (hue < 2 / 6) [r, g, b] = [x, c, 0];
-      else if (hue < 3 / 6) [r, g, b] = [0, c, x];
-      else if (hue < 4 / 6) [r, g, b] = [0, x, c];
-      else if (hue < 5 / 6) [r, g, b] = [x, 0, c];
-      else [r, g, b] = [c, 0, x];
+    //   let r, g, b;
+    //   if (hue < 1 / 6) [r, g, b] = [c, x, 0];
+    //   else if (hue < 2 / 6) [r, g, b] = [x, c, 0];
+    //   else if (hue < 3 / 6) [r, g, b] = [0, c, x];
+    //   else if (hue < 4 / 6) [r, g, b] = [0, x, c];
+    //   else if (hue < 5 / 6) [r, g, b] = [x, 0, c];
+    //   else [r, g, b] = [c, 0, x];
 
-      const toHex = (n: number) => {
-        const hex = Math.round((n + m) * 255).toString(16);
-        return hex.length === 1 ? "0" + hex : hex;
-      };
+    //   const toHex = (n: number) => {
+    //     const hex = Math.round((n + m) * 255).toString(16);
+    //     return hex.length === 1 ? "0" + hex : hex;
+    //   };
 
-      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-    };
+    //   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    // };
 
     const newColors = generateHarmonious();
     store.setCircles(
