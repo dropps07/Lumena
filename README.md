@@ -37,7 +37,7 @@ The application provides an interactive canvas where users can experiment with c
 
 ### 🎥 Demo Video
 
-https://res.cloudinary.com/dhzomnepn/video/upload/v1754500999/preview-video.mp4
+https://github.com/user-attachments/assets/90f76a24-b321-4c61-be10-9fc16925f3e3
 
 ---
 
