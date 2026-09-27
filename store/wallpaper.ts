@@ -57,11 +57,9 @@ interface WallpaperState {
   // Position
   textPosition: { x: number; y: number };
 
-  // Add these to WallpaperState interface
   sizeMode: "text" | "image";
   logoImage: string | null;
 
-  // Text Alignment
   textAlign: "left" | "center" | "right";
 
   // Actions
@@ -79,7 +77,6 @@ interface WallpaperState {
   generateNewPalette: () => void;
   resetPalette: () => void;
 
-  // Add missing setters
   setActiveTab: (tab: "design" | "effects" | "canvas") => void;
   setLetterSpacing: (spacing: number) => void;
   setOpacity: (opacity: number) => void;
@@ -109,20 +106,20 @@ interface WallpaperState {
   setIsDownloading: (isDownloading: boolean) => void;
   setTextPosition: (textPosition: { x: number; y: number }) => void;
 
-  // Add these actions
   setTextMode: (mode: "text" | "image") => void;
   setLogoImage: (image: string | null) => void;
 
-  // Add missing setters
   setTextAlign: (align: "left" | "center" | "right") => void;
 
-  // Add to WallpaperState interface
   isCopying: boolean;
   setIsCopying: (isCopying: boolean) => void;
+
+  // Save & Share
+  getShareableConfig: () => Record<string, unknown>;
+  loadConfig: (config: Partial<WallpaperState>) => void;
 }
 
 export const useWallpaperStore = create<WallpaperState>((set, get) => ({
-  // Initial state
   colors: INITIAL_COLORS,
   backgroundColors: INITIAL_BACKGROUND_COLORS,
   activeColor: null,
@@ -167,27 +164,22 @@ export const useWallpaperStore = create<WallpaperState>((set, get) => ({
   },
   textPosition: { x: 0, y: 0 },
 
-  // Add to initial state
   sizeMode: "text",
   logoImage: null,
 
-  // Text Alignment
   textAlign: "center",
 
-  // Actions
   setCircles: (circles) => {
-    // Check for overlapping circles and reposition if needed
     const repositionedCircles = circles.map((circle, index) => {
       const overlapping = circles.some((other, otherIndex) => {
         if (index === otherIndex) return false;
         const distance = Math.sqrt(
           Math.pow(circle.cx - other.cx, 2) + Math.pow(circle.cy - other.cy, 2)
         );
-        return distance < 20; // Threshold for overlap
+        return distance < 20;
       });
 
       if (overlapping) {
-        // Try to find a non-overlapping position
         let attempts = 0;
         let newCx = circle.cx;
         let newCy = circle.cy;
@@ -282,6 +274,7 @@ export const useWallpaperStore = create<WallpaperState>((set, get) => ({
   setTextAlign: (align) => set({ textAlign: align }),
   isCopying: false,
   setIsCopying: (isCopying) => set({ isCopying }),
+
   resetPalette: () => {
     const { circles } = get();
     const newCircles = INITIAL_COLORS.map((color, index) => ({
@@ -290,7 +283,6 @@ export const useWallpaperStore = create<WallpaperState>((set, get) => ({
       cy: circles[index]?.cy ?? Math.random() * 100,
     }));
 
-    // Check for overlapping circles and reposition if needed
     const repositionedCircles = newCircles.map((circle, index) => {
       const overlapping = newCircles.some((other, otherIndex) => {
         if (index === otherIndex) return false;
@@ -333,5 +325,43 @@ export const useWallpaperStore = create<WallpaperState>((set, get) => ({
       circles: repositionedCircles,
       numCircles: INITIAL_COLORS.length,
     });
+  },
+
+  // Save & Share
+  getShareableConfig: () => {
+    const state = get();
+    return {
+      colors: state.colors,
+      circles: state.circles,
+      numCircles: state.numCircles,
+      backgroundColor: state.backgroundColor,
+      text: state.text,
+      htmlContent: state.htmlContent,
+      fontSize: state.fontSize,
+      fontWeight: state.fontWeight,
+      letterSpacing: state.letterSpacing,
+      opacity: state.opacity,
+      fontFamily: state.fontFamily,
+      lineHeight: state.lineHeight,
+      textColor: state.textColor,
+      isItalic: state.isItalic,
+      isUnderline: state.isUnderline,
+      isStrikethrough: state.isStrikethrough,
+      blur: state.blur,
+      saturation: state.saturation,
+      contrast: state.contrast,
+      brightness: state.brightness,
+      grainIntensity: state.grainIntensity,
+      textShadow: state.textShadow,
+      textPosition: state.textPosition,
+      sizeMode: state.sizeMode,
+      logoImage: state.logoImage,
+      textAlign: state.textAlign,
+      backgroundImage: state.backgroundImage,
+    };
+  },
+
+  loadConfig: (config) => {
+    set(config);
   },
 }));

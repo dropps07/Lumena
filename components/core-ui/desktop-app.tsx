@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { SaveShareButton } from "@/components/ui/save-share-button";
 import {
   DownloadIcon,
   Trash2Icon,
@@ -820,7 +821,7 @@ export default function DesktopApp({
               </motion.div>
             )}
           </div>
-          <div className="flex w-full gap-2 p-2 sticky bottom-0  border-t border-primary/10  z-10">
+          {/* <div className="flex w-full gap-2 p-2 sticky bottom-0  border-t border-primary/10  z-10">
             <Button
               className="flex items-center w-full"
               variant="glass"
@@ -834,7 +835,24 @@ export default function DesktopApp({
             <Button variant="glass" onClick={copyImage} disabled={isCopying} className="w-fit">
               <CopyIcon className="size-4" />
             </Button>
-          </div>
+          </div> */}
+          <div className="flex w-full gap-2 p-2 sticky bottom-0 border-t border-primary/10 z-10">
+  <Button
+    className="flex items-center flex-1 min-w-0"
+    variant="glass"
+    onClick={downloadImage}
+    disabled={isDownloading}
+  >
+    <DownloadIcon className="size-4 shrink-0" />
+    <span className="text-sm truncate">Download</span>
+  </Button>
+
+  <Button variant="glass" onClick={copyImage} disabled={isCopying} className="w-fit shrink-0">
+    <CopyIcon className="size-4" />
+  </Button>
+
+  <SaveShareButton />
+</div>
         </section>
       </aside>
 
