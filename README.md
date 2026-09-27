@@ -1,10 +1,11 @@
 # Lumena — Interactive Mesh Gradient Creator
 
 ![Project Status: Live](https://img.shields.io/badge/Status-Live-purple?style=for-the-badge)
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge\&logo=next.js)
-![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge\&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge\&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-Styling-06B6D4?style=for-the-badge\&logo=tailwindcss)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-Styling-06B6D4?style=for-the-badge&logo=tailwindcss)
+![CI](https://github.com/dropps07/Lumena/actions/workflows/ci.yml/badge.svg)
 
 Lumena is a web-based interactive mesh gradient creator designed for creating smooth, customizable visual backgrounds, wallpapers, artwork, and other creative assets.
 
@@ -26,7 +27,7 @@ The application provides an interactive editing experience where users can manip
 
 ### Gradient Customization
 
-<img width="1174" height="693" alt="Screenshot 2026-09-15 at 6 10 56 PM" src="https://github.com/user-attachments/assets/2baa2792-d53c-45e8-92d4-6bbd3e4296e4" />
+<img width="1174" height="693" alt="Screenshot 2026-09-15 at 6 10 56 PM" src="https://github.com/user-attachments/assets/2baa2792-d53c-45e8-92d4-6bbd3e4296e4" />
 
 *Interactive controls for modifying gradient colors, points, and composition.*
 
@@ -55,7 +56,8 @@ https://github.com/user-attachments/assets/90f76a24-b321-4c61-be10-9fc16925f3e3
 * **Reusable Components** — UI functionality is separated into modular React components.
 * **Centralized State Management** — Zustand is used to manage shared editor state.
 * **Procedural Gradient Generation** — Simplex Noise is used as part of the visual generation process.
-* **Client-Side Architecture** — The current version runs primarily on the client without requiring a dedicated backend.
+* **Save & Share** — Gradients can be saved and retrieved via a generated short link.
+* **Public Gallery** — Browse previously saved gradients in a paginated grid.
 
 ---
 
@@ -162,6 +164,41 @@ These tools provide insight into application usage and user interaction patterns
 
 ---
 
+### 7. Backend & Persistence
+
+Gradients can be saved and shared via a generated short link, backed by a small API layer and a Postgres database.
+
+**Stack:** Postgres (hosted on [Neon](https://neon.tech)) · Prisma ORM · Next.js API routes · Upstash Redis (rate limiting)
+
+**Schema** (`prisma/schema.prisma`):
+
+| Field | Type | Purpose |
+|---|---|---|
+| `id` | UUID | Internal primary key |
+| `slug` | String | Short, public-facing identifier used in share URLs |
+| `config` | JSONB | The full gradient state (colors, blur, text styling, position, etc.) |
+| `createdAt` | DateTime | Used to order the gallery, newest first |
+| `viewCount` | Int | Reserved for future analytics |
+
+`config` is stored as a single JSONB blob rather than individual columns because the gradient's shape is still evolving — new editor controls can be added without a schema migration each time.
+
+**API routes:**
+
+| Method | Route | Purpose |
+|---|---|---|
+| `POST` | `/api/gradients` | Save the current editor state, returns a generated `slug` |
+| `GET` | `/api/gradients/[slug]` | Fetch a single saved gradient by its slug |
+| `GET` | `/api/gradients` | Paginated list of saved gradients (powers `/gallery`) |
+
+**Rate limiting:** the save endpoint is limited to 5 requests per minute per IP (sliding window, via Upstash Redis) to prevent write-spam against the database.
+
+**Pages built on this:**
+
+* **`/g/[slug]`** — loads a saved config into the editor's store and renders a read-only preview, scaled to the gradient's original resolution.
+* **`/gallery`** — paginated grid of saved gradients. Currently shows color/palette swatches rather than live-rendered canvas thumbnails — true live thumbnails would require either a separate canvas instance per card or snapshotting the image at save time, both larger changes scoped out for now.
+
+---
+
 ## ⚡ Performance & Engineering
 
 Lumena was designed as an interactive visual application where rendering performance directly affects the user experience.
@@ -212,8 +249,6 @@ The goal is to keep the interface out of the way while making the generated grad
 
 ## 📊 Core Application Flow
 
-The current application is primarily client-side.
-
 ```text
                     ┌─────────────────┐
                     │      User       │
@@ -234,23 +269,23 @@ The current application is primarily client-side.
                   │    Zustand Store    │
                   └──────────┬──────────┘
                              │
-                    ┌────────┴────────┐
-                    ▼                 ▼
-             ┌─────────────┐   ┌──────────────┐
-             │ Gradient    │   │ UI / Motion  │
-             │ Generation  │   │ Interactions │
-             └──────┬──────┘   └──────────────┘
-                    │
-                    ▼
-             ┌─────────────┐
-             │ Live Canvas │
-             │   Preview   │
-             └─────────────┘
+                ┌────────────┼────────────┐
+                ▼            ▼            ▼
+         ┌─────────────┐┌──────────┐┌─────────────┐
+         │ Gradient    ││ UI/Motion││ Save & Share│
+         │ Generation  ││Interact. ││   (API)     │
+         └──────┬──────┘└──────────┘└──────┬──────┘
+                │                          │
+                ▼                          ▼
+         ┌─────────────┐          ┌──────────────────┐
+         │ Live Canvas │          │ Postgres (Neon)  │
+         │   Preview   │          │ via Prisma       │
+         └─────────────┘          └──────────────────┘
 ```
 
 A user's interaction updates the centralized editor state. The updated state is then used by the gradient-generation and rendering logic to produce the new visual output.
 
-No external API request is required for the core gradient-editing experience.
+Editing itself requires no network round trip — the API layer is only involved when a gradient is explicitly saved, fetched by slug, or listed in the gallery.
 
 ---
 
@@ -267,6 +302,8 @@ Lumena/
 ├── hooks/                  # Custom React Hooks
 │
 ├── lib/                    # Application utilities and supporting logic
+│
+├── prisma/                 # Database schema (Prisma)
 │
 ├── public/                 # Static assets
 │
@@ -357,6 +394,12 @@ npm run start
 npm run lint
 ```
 
+### Tests
+
+```bash
+npm run test
+```
+
 ---
 
 ## 🌐 Deployment
@@ -373,177 +416,46 @@ The project can also be deployed to other platforms capable of running Next.js a
 
 ## ⚠️ Known Limitations
 
-The current version of Lumena is intentionally focused on the client-side gradient-generation experience.
-
-Some areas are currently limited by the lack of a backend and dedicated testing infrastructure.
-
-### 1. No Persistent Storage
-
-Gradients are not currently persisted to a remote database.
-
-A future backend will allow users to save and retrieve gradients across sessions.
-
-### 2. No Public Sharing System
-
-The current application does not provide generated URLs or short codes for sharing individual gradients.
-
-### 3. No Automated Test Suite
-
-The core gradient and color logic does not currently have a dedicated unit-test suite.
-
-This is planned as part of the next engineering iteration.
-
-### 4. No Continuous Integration
-
-There is currently no GitHub Actions workflow automatically running the project's linting, tests, and production build.
-
-### 5. High-Resolution Rendering
+### 1. High-Resolution Rendering
 
 Large exports can become computationally expensive because rendering work is performed on the main browser thread.
 
 A Web Worker-based rendering system is planned for high-resolution exports.
 
-### 6. Accessibility
+### 2. Accessibility
 
 The editor can be improved further with more comprehensive keyboard navigation, ARIA labels, focus management, and screen-reader support.
+
+### 3. Gallery Thumbnails
+
+The gallery currently renders color-swatch previews rather than live gradient thumbnails, since the live canvas is driven by a single global store not designed for rendering many gradients simultaneously. Proper live thumbnails would need either isolated per-card canvas state or a snapshot image generated at save time.
+
+---
+
+## ✅ Completed Since Initial Release
+
+What follows was originally listed under "Future Improvements" — it's now shipped:
+
+* **Unit testing with Vitest** — pure logic extracted and tested independently of the UI: `hslToHex` color conversion, `generateBlobGeometry` (with injectable randomness for deterministic tests), and `applyGrainToChannel` clamping behavior.
+* **CI with GitHub Actions** — lint, test, and build run automatically on every push and pull request.
+* **Backend, API & persistence** — see the [Backend & Persistence](#7-backend--persistence) section above for the full write-up: Postgres via Neon, Prisma ORM, three API routes, rate limiting, save/share/gallery pages.
 
 ---
 
 ## 🔮 Future Improvements
 
-The next phase of Lumena focuses on turning the current client-side creative tool into a more production-oriented application.
-
-### 1. Unit Testing with Vitest
-
-Add a dedicated unit-testing layer focused on the application's underlying visual logic rather than only testing UI snapshots.
-
-Planned coverage includes:
-
-* Color interpolation.
-* Gradient calculations.
-* Color transformations.
-* Gradient point calculations.
-* Edge cases involving color and position values.
-
-The goal is to verify that the core visual logic behaves correctly independently of the browser UI.
-
----
-
-### 2. Continuous Integration with GitHub Actions
-
-Add a GitHub Actions workflow that runs automatically on pushes and pull requests.
-
-The planned pipeline will run:
-
-```text
-Push / Pull Request
-        │
-        ▼
-Install Dependencies
-        │
-        ├───────────────┐
-        ▼               ▼
-      Lint            Tests
-        │               │
-        └───────┬───────┘
-                ▼
-              Build
-                │
-                ▼
-            CI Result
-```
-
-This provides an automated safety net against linting, test, and production-build regressions.
-
----
-
-### 3. Backend, API & Persistence
-
-The largest planned architectural improvement is introducing a backend.
-
-The current application is primarily client-side, with no dedicated server, database, or API for gradient persistence.
-
-The planned backend will introduce:
-
-* An API layer for gradient operations.
-* PostgreSQL or Supabase for persistence.
-* Server-side validation.
-* Saved gradients.
-* Shareable gradient URLs.
-* Short codes for individual gradients.
-* A public gallery.
-* Pagination for gallery results.
-* Rate limiting on gradient creation endpoints.
-
-The planned architecture will look approximately like:
-
-```text
-                 ┌──────────────────┐
-                 │   Lumena Client  │
-                 │ Next.js / React  │
-                 └────────┬─────────┘
-                          │
-                          ▼
-                 ┌──────────────────┐
-                 │     API Layer    │
-                 │ REST / Next API  │
-                 └────────┬─────────┘
-                          │
-                 ┌────────┴─────────┐
-                 ▼                  ▼
-          ┌──────────────┐   ┌──────────────┐
-          │ PostgreSQL / │   │ Rate Limiter │
-          │   Supabase   │   │              │
-          └──────────────┘   └──────────────┘
-```
-
-This will allow Lumena to evolve from a client-side design tool into a full-stack application with APIs, persistence, validation, pagination, and basic production infrastructure.
-
----
-
-### 4. Web Worker-Based Rendering
+### 1. Web Worker-Based Rendering
 
 High-resolution exports can require significantly more computation than the interactive editor.
 
 A future implementation will move expensive rendering operations into a **Web Worker**.
-
-The intended architecture is:
-
-```text
-                    Main Thread
-                 ┌───────────────┐
-                 │ UI / Controls │
-                 │ User Input    │
-                 └───────┬───────┘
-                         │
-                         │ Worker Message
-                         ▼
-                 ┌───────────────┐
-                 │  Web Worker   │
-                 │               │
-                 │ High-Res      │
-                 │ Rendering     │
-                 └───────┬───────┘
-                         │
-                         │ Rendered Result
-                         ▼
-                 ┌───────────────┐
-                 │ Export / Save │
-                 └───────────────┘
-```
-
 Performance improvements will be measured using concrete benchmarks, such as comparing high-resolution export time before and after moving rendering work into a worker.
-
-The README will be updated with measured results once the implementation is complete.
-
 ---
 
-### 5. Accessibility
+### 2. Accessibility
 
 A dedicated accessibility pass will improve the editor's usability for keyboard and assistive-technology users.
-
-Planned improvements include:
-
+improvements include:
 * Keyboard controls for sliders and color controls.
 * Full keyboard navigation.
 * ARIA labels for interactive controls.
@@ -556,7 +468,7 @@ Planned improvements include:
 
 ## 📌 Engineering Roadmap
 
-The planned evolution of Lumena can be summarized as:
+Th evolution of Lumena can be summarized as:
 
 ```text
 Current
@@ -568,28 +480,22 @@ Current
   └── Responsive UI
         │
         ▼
-Phase 1 — Reliability
+Phase 1 — Reliability ✅ Done
   │
   ├── Vitest Unit Tests
   └── GitHub Actions CI
         │
         ▼
-Phase 2 — Full Stack
+Phase 2 — Full Stack ✅ Done
   │
-  ├── API
-  ├── PostgreSQL / Supabase
+  ├── API (Next.js route handlers)
+  ├── PostgreSQL (Neon) via Prisma
   ├── Saved Gradients
-  ├── Shareable URLs
-  ├── Public Gallery
+  ├── Shareable URLs (/g/[slug])
+  ├── Public Gallery (/gallery)
   ├── Pagination
-  └── Rate Limiting
-        │
-        ▼
-Phase 3 — Performance & Quality
-  │
-  ├── Web Worker Rendering
-  ├── High-Resolution Export Benchmarks
-  └── Accessibility Improvements
+  └── Rate Limiting (Upstash)
+
 ```
 
 ---
@@ -598,7 +504,7 @@ Phase 3 — Performance & Quality
 
 Lumena started as an interactive visual experiment and evolved into a frontend engineering project centered around real-time rendering, state management, interaction design, and procedural graphics.
 
-The next stage of the project focuses on the engineering concerns that sit behind a production application:
+This stage of the project focused on the engineering concerns that sit behind a production application — most of which are now implemented:
 
 * Reliable automated tests.
 * Continuous integration.
