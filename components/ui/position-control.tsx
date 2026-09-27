@@ -44,7 +44,8 @@ export function PositionControl({
       };
 
   // Convert absolute coordinates to relative (-1 to 1)
-  const absoluteToRelative = (x: number, y: number): Position => {
+  const absoluteToRelative = useCallback(
+  (x: number, y: number): Position => {
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return { x: 0, y: 0 };
 
@@ -55,17 +56,18 @@ export function PositionControl({
     let newY = Math.max(-1, Math.min(1, relY)) * (height / 2);
 
     if (snapToGrid) {
-      // Convert to grid space
+      //convert to grid space
       const gridStepX = width / 2 / (rect.width / GRID_SIZE);
       const gridStepY = height / 2 / (rect.height / GRID_SIZE);
-
-      // Snap to nearest grid point
+      //snap to nearest grid space
       newX = Math.round(newX / gridStepX) * gridStepX;
       newY = Math.round(newY / gridStepY) * gridStepY;
     }
 
     return { x: newX, y: newY };
-  };
+  },
+  [width, height, snapToGrid]
+);
 
   // Handle mouse/touch events
   const handlePointerMove = useCallback((e: PointerEvent) => {

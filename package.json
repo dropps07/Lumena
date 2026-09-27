@@ -79,6 +79,7 @@
     "tailwindcss": "^4.0.0",
     "tsx": "^4.23.13",
     "typescript": "^5",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "vitest-mock-extended": "^5.1.1"
   }
 }

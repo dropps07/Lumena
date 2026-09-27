@@ -105,6 +105,51 @@ export function CanvasPreview() {
     });
   }, [effectiveValues.resolution.width, effectiveValues.resolution.height]);
 
+  const compositeCanvas = useCallback(() => {
+  if (!canvasRef.current || !backgroundLayerRef.current) return;
+
+  const ctx = canvasRef.current.getContext("2d", {
+    alpha: true,
+    willReadFrequently: false,
+  })!;
+ 
+//clear canvas
+  ctx.clearRect(0, 0, effectiveValues.resolution.width, effectiveValues.resolution.height);
+//1. draw solid background colors
+  ctx.fillStyle = effectiveValues.backgroundColor;
+  ctx.fillRect(0, 0, effectiveValues.resolution.width, effectiveValues.resolution.height);
+//2. draw shapes and gradients
+  const cssFilters = [
+    effectiveValues.blur > 0 ? `blur(${effectiveValues.blur / 4}px)` : "",
+    `brightness(${effectiveValues.brightness}%)`,
+    `contrast(${effectiveValues.contrast}%)`,
+    `saturate(${effectiveValues.saturation}%)`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  ctx.filter = cssFilters;
+  ctx.drawImage(backgroundLayerRef.current, 0, 0);
+//3.  apply grain film
+  if (effectiveValues.grainIntensity > 0) {
+    applyGrainEffect(ctx, effectiveValues.grainIntensity / 100);
+  }
+}, [
+  effectiveValues.blur,
+  effectiveValues.brightness,
+  effectiveValues.contrast,
+  effectiveValues.saturation,
+  effectiveValues.resolution.width,
+  effectiveValues.resolution.height,
+  effectiveValues.backgroundColor,
+  effectiveValues.grainIntensity,
+]);
+
+ const compositeCanvasRef = useRef(compositeCanvas);
+    useEffect(() => {
+    compositeCanvasRef.current = compositeCanvas;
+  }, [compositeCanvas]);
+
   // Handle background and shapes
   useEffect(() => {
     if (!backgroundLayerRef.current) return;
@@ -138,14 +183,14 @@ export function CanvasPreview() {
         const y = (effectiveValues.resolution.height - scaledHeight) / 2;
 
         ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
-        debouncedCompositeCanvas(compositeCanvas);
+        debouncedCompositeCanvas(() => compositeCanvasRef.current());
       };
     } else {
       effectiveValues.circles.forEach((circle) => {
         const shape = generateRandomShape(circle.color);
         drawShape(ctx, shape, circle);
       });
-      debouncedCompositeCanvas(compositeCanvas);
+      debouncedCompositeCanvas(() => compositeCanvasRef.current());
     }
   }, [
     effectiveValues.backgroundColor,
@@ -154,59 +199,6 @@ export function CanvasPreview() {
     effectiveValues.resolution.width,
     effectiveValues.resolution.height,
     debouncedCompositeCanvas,
-  ]);
-
-  const compositeCanvas = useCallback(() => {
-    if (!canvasRef.current || !backgroundLayerRef.current) return;
-
-    const ctx = canvasRef.current.getContext("2d", {
-      alpha: true,
-      willReadFrequently: false,
-    })!;
-
-    // Clear main canvas
-    ctx.clearRect(
-      0,
-      0,
-      effectiveValues.resolution.width,
-      effectiveValues.resolution.height
-    );
-
-    // 1. Draw solid background color first (no filters)
-    ctx.fillStyle = effectiveValues.backgroundColor;
-    ctx.fillRect(
-      0,
-      0,
-      effectiveValues.resolution.width,
-      effectiveValues.resolution.height
-    );
-
-    // 2. Draw shapes/gradients with filters
-    const cssFilters = [
-      effectiveValues.blur > 0 ? `blur(${effectiveValues.blur / 4}px)` : "",
-      `brightness(${effectiveValues.brightness}%)`,
-      `contrast(${effectiveValues.contrast}%)`,
-      `saturate(${effectiveValues.saturation}%)`,
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    ctx.filter = cssFilters;
-    ctx.drawImage(backgroundLayerRef.current, 0, 0);
-
-    // 3. Apply film grain
-    if (effectiveValues.grainIntensity > 0) {
-      applyGrainEffect(ctx, effectiveValues.grainIntensity / 100);
-    }
-  }, [
-    effectiveValues.blur,
-    effectiveValues.brightness,
-    effectiveValues.contrast,
-    effectiveValues.saturation,
-    effectiveValues.resolution.width,
-    effectiveValues.resolution.height,
-    effectiveValues.backgroundColor,
-    effectiveValues.grainIntensity,
   ]);
 
   // Handle filters
