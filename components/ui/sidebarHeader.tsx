@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 import logo from "@/public/logo.svg";
 import Image from "next/image";
-import gradientWallpaper from "@/public/gradii-logo.png";
+import gradientWallpaper from "@/public/Lumena-logo.png";
 import { motion } from "motion/react";
 import { IMAGES } from "@/assets";
 import Marquee from "./marquee";
@@ -30,17 +30,17 @@ export function SidebarHeader() {
     const cleanupOldVersions = () => {
       const oldVersions = ["0.1", "0.2", "0.3"];
       oldVersions.forEach((version) => {
-        localStorage.removeItem(`gradiiLastSeenVersion_${version}`);
+        localStorage.removeItem(`LumenaLastSeenVersion_${version}`);
       });
-      localStorage.removeItem("hasSeenGradiiDialog"); // Remove the very old key too
+      localStorage.removeItem("hasSeenLumenaDialog"); // Remove the very old key too
     };
 
     cleanupOldVersions();
 
-    const lastSeenVersion = localStorage.getItem("gradiiLastSeenVersion");
+    const lastSeenVersion = localStorage.getItem("LumenaLastSeenVersion");
     if (!lastSeenVersion || lastSeenVersion !== CURRENT_VERSION) {
       setOpen(true);
-      localStorage.setItem("gradiiLastSeenVersion", CURRENT_VERSION);
+      localStorage.setItem("LumenaLastSeenVersion", CURRENT_VERSION);
     }
   }, []);
 
@@ -57,7 +57,7 @@ export function SidebarHeader() {
                 priority
                 loading="eager"
               />
-              <p className="text-lg font-bold tracking-tighter">Gradii</p>
+              <p className="text-lg font-bold tracking-tighter">Lumena</p>
             </div>
           </div>
           <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors duration-300 p-2">
@@ -66,7 +66,7 @@ export function SidebarHeader() {
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-3xl border-none rounded-2xl! h-[95vh]">
-        <DialogTitle className="sr-only">Gradii</DialogTitle>
+        <DialogTitle className="sr-only">Lumena</DialogTitle>
         <motion.div
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}

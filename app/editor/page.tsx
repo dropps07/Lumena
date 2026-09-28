@@ -173,7 +173,7 @@ export default function Editor() {
         const dataUrl = tempCanvas.toDataURL("image/png");
         const link = document.createElement("a");
         link.href = dataUrl;
-        link.download = `gradii-${store.resolution.width}x${store.resolution.height}.png`;
+        link.download = `Lumena-${store.resolution.width}x${store.resolution.height}.png`;
         link.click();
       } else {
         const blob = await new Promise<Blob>((resolve) =>
@@ -182,7 +182,7 @@ export default function Editor() {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `gradii-${store.resolution.width}x${store.resolution.height}.png`;
+        link.download = `Lumena-${store.resolution.width}x${store.resolution.height}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

@@ -1,4 +1,4 @@
-const CACHE_NAME = "gradii-cache-v1";
+const CACHE_NAME = "Lumena-cache-v1";
 const urlsToCache = [
   "/",
   "/index.html",

@@ -3,7 +3,7 @@ import tweet2 from "./twt-2.png";
 import tweet3 from "./twt-3.png";
 import tweet4 from "./twt-4.png";
 import x from "./x.png";
-import banner from "./gradii-banner.png";
+import banner from "./Lumena-banner.png";
 import logo from "./logo.svg";
 export const IMAGES = {
   tweet1: tweet1,
